@@ -1,0 +1,25 @@
+{
+  "lambdaLayers": [],
+  "permissions": {
+    "storage": {
+      "Blog": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "Post": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "Comment": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  }
+}

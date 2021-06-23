@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Germania+One&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Germania One", sans-serif;
+}
+.container {
+  width: 700px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.header {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40px;
+}
+.header h2 {
+  font-size: 40px;
+}
+.info-content {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40px;
+}

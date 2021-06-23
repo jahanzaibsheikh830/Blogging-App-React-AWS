@@ -1,0 +1,14 @@
+{
+  "typeName": "Query",
+  "fieldName": "getBlogs",
+  "arguments": {
+    "id": "fe8dc5a6",
+    "title": "first post",
+    "blogId": "fe8dc5a6-b599-485c-a783-aa63a3ee1f68"
+  },
+  "identity": null,
+  "source": null,
+  "prev": {
+    "result": {}
+  }
+}

@@ -1,0 +1,41 @@
+type Blog {
+  id: ID!
+  name: String!
+  posts: [Post] @function(name: "blogsfunction-${env}")
+}
+
+type Post {
+  id: ID!
+  title: String!
+  blogId: ID!
+  comments: [Comment] @function(name: "blogsfunction-${env}")
+}
+
+type Comment {
+  id: ID!
+  content: String
+  postId: ID!
+}
+type Message {
+  message: String
+}
+type Mutation {
+  addBlog(id: ID!, name: String!): Blog @function(name: "blogsfunction-${env}")
+  addPost(id: ID!, title: String!, blogId: ID!): Post
+    @function(name: "blogsfunction-${env}")
+  addComment(id: ID!, content: String, postId: ID!): Comment
+    @function(name: "blogsfunction-${env}")
+}
+type Query {
+  getBlogs: [Blog] @function(name: "blogsfunction-${env}")
+  getBlog(id: ID!): Blog @function(name: "blogsfunction-${env}")
+  getPosts: [Post] @function(name: "blogsfunction-${env}")
+  getPost(id: ID!): Post @function(name: "blogsfunction-${env}")
+  getComments: [Comment] @function(name: "blogsfunction-${env}")
+  getComment(id: ID!): Comment @function(name: "blogsfunction-${env}")
+}
+
+type Schema {
+  query: Query
+  mutation: Mutation
+}
