@@ -1,10 +1,10 @@
 {
-  "typeName": "Query",
-  "fieldName": "getBlogs",
+  "typeName": "Mutation",
+  "fieldName": "deletePost",
   "arguments": {
-    "id": "fe8dc5a6",
-    "title": "first post",
-    "blogId": "fe8dc5a6-b599-485c-a783-aa63a3ee1f68"
+    "id": "923f5064-0951-4573-ad5b-faaa98aceb37",
+    "content": "hfdhfdhfdhf",
+    "description": "this is about aws"
   },
   "identity": null,
   "source": null,

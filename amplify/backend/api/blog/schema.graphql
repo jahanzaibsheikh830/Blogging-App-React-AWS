@@ -1,38 +1,56 @@
-type Blog {
-  id: ID!
-  name: String!
-  posts: [Post] @function(name: "blogsfunction-${env}")
-}
-
-type Post {
-  id: ID!
-  title: String!
-  blogId: ID!
+type Post @aws_api_key @aws_cognito_user_pools {
+  id: ID
+  title: String
+  description: String
   comments: [Comment] @function(name: "blogsfunction-${env}")
 }
 
-type Comment {
-  id: ID!
+type Comment @aws_api_key @aws_cognito_user_pools {
+  id: ID
   content: String
   postId: ID!
 }
-type Message {
-  message: String
-}
 type Mutation {
-  addBlog(id: ID!, name: String!): Blog @function(name: "blogsfunction-${env}")
-  addPost(id: ID!, title: String!, blogId: ID!): Post
+  addPost(id: ID, title: String, description: String): Post
     @function(name: "blogsfunction-${env}")
-  addComment(id: ID!, content: String, postId: ID!): Comment
+    @aws_cognito_user_pools
+    @aws_api_key
+
+  updatePost(id: ID, title: String, description: String): Post
+    @function(name: "blogsfunction-${env}")
+    @aws_cognito_user_pools
+    @aws_api_key
+
+  deletePost(id: ID!): Post
+    @aws_cognito_user_pools
+    @aws_api_key
+    @function(name: "blogsfunction-${env}")
+
+  addComment(id: ID, content: String, postId: ID!): Comment
+    @function(name: "blogsfunction-${env}")
+    @aws_cognito_user_pools
+    @aws_api_key
+
+  updateComment(id: ID, content: String, postId: ID!): Comment
+    @function(name: "blogsfunction-${env}")
+    @aws_cognito_user_pools
+    @aws_api_key
+
+  deleteComment(id: ID!): Comment
+    @aws_cognito_user_pools
+    @aws_api_key
     @function(name: "blogsfunction-${env}")
 }
+
 type Query {
-  getBlogs: [Blog] @function(name: "blogsfunction-${env}")
-  getBlog(id: ID!): Blog @function(name: "blogsfunction-${env}")
-  getPosts: [Post] @function(name: "blogsfunction-${env}")
-  getPost(id: ID!): Post @function(name: "blogsfunction-${env}")
-  getComments: [Comment] @function(name: "blogsfunction-${env}")
-  getComment(id: ID!): Comment @function(name: "blogsfunction-${env}")
+  getPosts: [Post]
+    @function(name: "blogsfunction-${env}")
+    @aws_api_key
+    @aws_cognito_user_pools
+  getPost(id: ID!): Post
+    @function(name: "blogsfunction-${env}")
+    @aws_api_key
+    @aws_cognito_user_pools
 }
 
 type Schema {

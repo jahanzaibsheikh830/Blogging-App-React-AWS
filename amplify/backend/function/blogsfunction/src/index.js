@@ -4,34 +4,13 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 
 const resolver = {
   Mutation: {
-    addBlog: async (ctx) => {
-      const uid = uuidv4();
-      var params = {
-        Item: {
-          id: uid,
-          name: ctx.arguments.name,
-        },
-        TableName: process.env.STORAGE_BLOG_NAME,
-      };
-      return await docClient
-        .put(params)
-        .promise()
-        .then((data) => {
-          console.log("ctx arg ===", ctx.arguments);
-          return { id: uid, name: ctx.arguments.name };
-        })
-        .catch((err) => {
-          throw new Error(err);
-        });
-    },
-
     addPost: async (ctx) => {
       const uid = uuidv4();
       var params = {
         Item: {
           id: uid,
           title: ctx.arguments.title,
-          blogId: ctx.arguments.blogId,
+          description: ctx.arguments.description,
         },
         TableName: process.env.STORAGE_POST_NAME,
       };
@@ -42,14 +21,55 @@ const resolver = {
           return {
             id: uid,
             title: ctx.arguments.title,
-            blogId: ctx.arguments.blogId,
+            description: ctx.arguments.description,
           };
         })
         .catch((err) => {
           throw new Error(err);
         });
     },
-
+    updatePost: async (ctx) => {
+      var params = {
+        TableName: process.env.STORAGE_POST_NAME,
+        Key: { id: ctx.arguments.id },
+        UpdateExpression: "set title   = :title , description = :description",
+        ExpressionAttributeValues: {
+          ":title": ctx.arguments.title,
+          ":description": ctx.arguments.description,
+        },
+      };
+      return await docClient
+        .update(params)
+        .promise()
+        .then((data) => {
+          return {
+            id: ctx.arguments.id,
+            title: ctx.arguments.title,
+            description: ctx.arguments.description,
+          };
+        })
+        .catch((err) => {
+          throw new Error(err);
+        });
+    },
+    deletePost: async (ctx) => {
+      var params = {
+        TableName: process.env.STORAGE_POST_NAME,
+        Key: { id: ctx.arguments.id },
+      };
+      return await docClient
+        .delete(params)
+        .promise()
+        .then((data) => {
+          console.log(data);
+          return {
+            id: ctx.arguments.id,
+          };
+        })
+        .catch((err) => {
+          throw new Error(err);
+        });
+    },
     addComment: async (ctx) => {
       const uid = uuidv4();
       var params = {
@@ -74,39 +94,47 @@ const resolver = {
           throw new Error(err);
         });
     },
-  },
-  Query: {
-    getBlogs: async (ctx) => {
+    updateComment: async (ctx) => {
       var params = {
-        TableName: process.env.STORAGE_BLOG_NAME,
-      };
-      const scanResults = [];
-      let items;
-      do {
-        items = await docClient.scan(params).promise();
-        items.Items.forEach((item) => scanResults.push(item));
-        params.ExclusiveStartKey = items.LastEvaluatedKey;
-      } while (typeof items.LastEvaluatedKey !== "undefined");
-      return scanResults;
-    },
-
-    getBlog: async (ctx) => {
-      console.log(ctx);
-      var params = {
-        TableName: process.env.STORAGE_BLOG_NAME,
+        TableName: process.env.STORAGE_COMMENT_NAME,
         Key: { id: ctx.arguments.id },
+        UpdateExpression: "set content = :content",
+        ExpressionAttributeValues: {
+          ":content": ctx.arguments.content,
+        },
       };
       return await docClient
-        .get(params)
+        .update(params)
         .promise()
         .then((data) => {
-          console.log("data", data);
-          return data;
+          return {
+            id: ctx.arguments.id,
+            content: ctx.arguments.content,
+          };
         })
         .catch((err) => {
           throw new Error(err);
         });
     },
+    deleteComment: async (ctx) => {
+      var params = {
+        TableName: process.env.STORAGE_COMMENT_NAME,
+        Key: { id: ctx.arguments.id },
+      };
+      return await docClient
+        .delete(params)
+        .promise()
+        .then((data) => {
+          return {
+            id: ctx.arguments.id,
+          };
+        })
+        .catch((err) => {
+          throw new Error(err);
+        });
+    },
+  },
+  Query: {
     getPosts: async () => {
       var params = {
         TableName: process.env.STORAGE_POST_NAME,
@@ -122,28 +150,42 @@ const resolver = {
     },
     getPost: async (ctx) => {
       var params = {
-        TableName: process.env.STORAGE__NAME,
+        TableName: process.env.STORAGE_POST_NAME,
         Key: { id: ctx.arguments.id },
       };
-      return await docClient
-        .get(params)
-        .promise()
-        .then((data) => {
-          console.log("data", data);
-          return data;
-        })
-        .catch((err) => {
-          throw new Error(err);
-        });
+      const scanResults = [];
+      let items;
+      do {
+        items = await docClient.scan(params).promise();
+        items.Items.forEach((item) => scanResults.push(item));
+        params.ExclusiveStartKey = items.LastEvaluatedKey;
+      } while (typeof items.LastEvaluatedKey !== "undefined");
+      return scanResults;
     },
   },
-  Blog: {
-    posts: (ctx) => {
-      console.log("ctx", ctx);
+  Post: {
+    comments: async (ctx) => {
+      console.log("ctx source id", ctx.source.id);
+      var params = {
+        TableName: process.env.STORAGE_COMMENT_NAME,
+        IndexName: "postId-index",
+        KeyConditionExpression: "postId  = :hkey",
+        ExpressionAttributeValues: {
+          ":hkey": ctx.source.id,
+        },
+      };
+      const scanResults = [];
+      let items;
+      do {
+        items = await docClient.query(params).promise();
+        items.Items.forEach((item) => scanResults.push(item));
+        params.ExclusiveStartKey = items.LastEvaluatedKey;
+      } while (typeof items.LastEvaluatedKey !== "undefined");
+      return scanResults;
     },
   },
 };
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   // console.log("event===", event);
   const typeHandler = resolver[event.typeName];
   if (typeHandler) {

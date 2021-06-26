@@ -63,5 +63,14 @@
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
     }
+  },
+  "auth": {
+    "blog1b752f6b": {
+      "service": "Cognito",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
   }
 }

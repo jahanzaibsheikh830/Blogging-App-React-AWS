@@ -15,7 +15,15 @@
       "function": {
         "blogsfunction": {
           "deploymentBucketName": "amplify-blog-dev-133211-deployment",
-          "s3Key": "amplify-builds/blogsfunction-526a54352f784e464f44-build.zip"
+          "s3Key": "amplify-builds/blogsfunction-6138735364527a645236-build.zip"
+        }
+      },
+      "auth": {
+        "blog1b752f6b": {
+          "userPoolId": "us-east-1_lPb9NQ8EP",
+          "userPoolName": "custom1d13aa8d_userpool_1d13aa8d-dev",
+          "webClientId": "6hil053k7sntml19nucegeapqq",
+          "nativeClientId": "6hil053k7sntml19nucegeapqq"
         }
       }
     }
