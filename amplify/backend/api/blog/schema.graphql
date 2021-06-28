@@ -31,7 +31,7 @@ type Mutation {
     @aws_cognito_user_pools
     @aws_api_key
 
-  updateComment(id: ID, content: String, postId: ID!): Comment
+  updateComment(id: ID, content: String, postId: ID): Comment
     @function(name: "blogsfunction-${env}")
     @aws_cognito_user_pools
     @aws_api_key
@@ -41,7 +41,37 @@ type Mutation {
     @aws_api_key
     @function(name: "blogsfunction-${env}")
 }
+type Subscription {
+  addedPost: Post
+    @aws_subscribe(mutations: ["addPost"])
+    @aws_cognito_user_pools
+    @aws_api_key
 
+  updatedPost: Post
+    @aws_subscribe(mutations: ["updatePost"])
+    @aws_cognito_user_pools
+    @aws_api_key
+
+  deletedPost: Post
+    @aws_subscribe(mutations: ["deletePost"])
+    @aws_cognito_user_pools
+    @aws_api_key
+
+  addedComment: Comment
+    @aws_subscribe(mutations: ["addComment"])
+    @aws_cognito_user_pools
+    @aws_api_key
+
+  updatedComment: Comment
+    @aws_subscribe(mutations: ["updateComment"])
+    @aws_cognito_user_pools
+    @aws_api_key
+
+  deletedComment: Comment
+    @aws_subscribe(mutations: ["deleteComment"])
+    @aws_cognito_user_pools
+    @aws_api_key
+}
 type Query {
   getPosts: [Post]
     @function(name: "blogsfunction-${env}")
@@ -56,4 +86,5 @@ type Query {
 type Schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }

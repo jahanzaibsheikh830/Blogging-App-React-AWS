@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Switch,
   Route,
   Redirect,
@@ -15,7 +15,6 @@ import { Auth } from "aws-amplify";
 import { user } from "../../redux/action/reduxaction";
 function RouterConfig() {
   const useData = useSelector((state) => state.addUser);
-  console.log(useData);
   const dispatch = useDispatch();
   useEffect(() => {
     checkUser();

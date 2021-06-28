@@ -1,25 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Comment, Form, Header } from "semantic-ui-react";
 import DeleteComment from "./deletecomment";
+import UpdateComment from "./updatecomment";
 import { API, graphqlOperation } from "aws-amplify";
 import { addComment } from "../../graphql/mutations";
+
 function CommentExampleReplyFormOuter(props) {
-  console.log("sfsfgsdgd", props);
   const [getId, setId] = useState("");
   const [commentValue, setCommmentValue] = useState("");
   function setInput(e) {
     setCommmentValue(e.target.value);
     setId(props.postId);
-    console.log("getId ", getId);
-    console.log("commentValue", commentValue);
   }
+
   async function addcomment(e) {
     e.preventDefault();
+    if (!commentValue) return;
     try {
-      const commentData = await API.graphql(
+      await API.graphql(
         graphqlOperation(addComment, { content: commentValue, postId: getId })
       );
-      console.log(commentData);
       setCommmentValue("");
     } catch (err) {
       console.log("creating comment err", err);
@@ -45,7 +45,7 @@ function CommentExampleReplyFormOuter(props) {
                   <span>Today at 5:42PM</span>
                   <Comment.Actions>
                     <DeleteComment value={value} />
-                    <a href='https://'>Edit</a>
+                    <UpdateComment value={value} />
                   </Comment.Actions>
                 </Comment.Metadata>
                 <Comment.Text>{value.content}</Comment.Text>

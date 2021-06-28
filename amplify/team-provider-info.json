@@ -15,7 +15,7 @@
       "function": {
         "blogsfunction": {
           "deploymentBucketName": "amplify-blog-dev-133211-deployment",
-          "s3Key": "amplify-builds/blogsfunction-6138735364527a645236-build.zip"
+          "s3Key": "amplify-builds/blogsfunction-4c324a7a432b4f494647-build.zip"
         }
       },
       "auth": {

@@ -53,7 +53,7 @@ export const addComment = /* GraphQL */ `
   }
 `;
 export const updateComment = /* GraphQL */ `
-  mutation UpdateComment($id: ID, $content: String, $postId: ID!) {
+  mutation UpdateComment($id: ID, $content: String, $postId: ID) {
     updateComment(id: $id, content: $content, postId: $postId) {
       id
       content

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "../style.css";
 import AdminNavbar from "./adminNavbar";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import AddPost from "./addpost";
 import Post from "./post";
 import Users from "./users";
@@ -11,7 +10,6 @@ function FormExampleForm() {
     users: "",
     adminposts: "",
   });
-  console.log(customRoute);
   return (
     <div>
       <div className='dashboard'>

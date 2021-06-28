@@ -19,17 +19,12 @@ const DeleteComment = (props) => {
     size: undefined,
   });
   const { open, size } = state;
-  console.log("props", props);
-
-  console.log("delete Cpmment", props);
-  console.log("delete comment id", props.value.id);
   async function deletecomment() {
     const deleteData = await API.graphql(
       graphqlOperation(deleteComment, {
         id: props.value.id,
       })
     );
-    console.log(deleteData);
     dispatch({ type: "close" });
   }
   return (

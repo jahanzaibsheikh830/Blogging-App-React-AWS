@@ -14,7 +14,6 @@ function Home() {
   async function fetchTodos() {
     try {
       const postData = await API.graphql(graphqlOperation(getPosts));
-      console.log(postData.data.getPosts);
       dispatch(
         user({
           posts: postData.data.getPosts,

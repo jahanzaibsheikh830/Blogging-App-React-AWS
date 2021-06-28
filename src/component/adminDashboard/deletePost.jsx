@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Icon, Modal } from "semantic-ui-react";
 import { deletePost } from "../../graphql/mutations";
 import { API, graphqlOperation } from "aws-amplify";
+import { deletedPost } from "../../graphql/subscription";
+import { useDispatch, useSelector } from "react-redux";
+import { user } from "../../redux/action/reduxaction";
 function exampleReducer(state, action) {
   switch (action.type) {
     case "close":
@@ -19,19 +22,49 @@ const DeletePost = (props) => {
     size: undefined,
   });
   const { open, size } = state;
-  console.log("props", props);
+  const dispatchs = useDispatch();
+  const useData = useSelector((state) => state.addUser);
 
   async function deletepost() {
-    console.log("delete post", props);
-    console.log("delete post id", props.value.id);
     const deleteData = await API.graphql(
       graphqlOperation(deletePost, {
         id: props.value.id,
       })
     );
-    console.log(deleteData);
     dispatch({ type: "close" });
   }
+  let createSubscription;
+
+  function setupSubscription() {
+    createSubscription = API.graphql(graphqlOperation(deletedPost)).subscribe({
+      next: (postData) => {
+        console.log("post Subscription data", postData.value.data.deletedPost);
+        useData.posts.find((post, index) => {
+          if (post.id === postData.value.data.deletedPost.id) {
+            console.log("posts====", post);
+            console.log("index", index);
+            useData.posts.splice(index, 1);
+            let newPosts = [...useData.posts];
+            return dispatchs(
+              user({
+                posts: newPosts,
+              })
+            );
+            // console.log("updatedx Data", useData.posts);
+          }
+        });
+      },
+      error: (err) => {
+        console.log("subscription Error", err);
+      },
+    });
+  }
+  useEffect(() => {
+    setupSubscription();
+    return () => {
+      createSubscription.unsubscribe();
+    };
+  }, []);
   return (
     <>
       <Icon
