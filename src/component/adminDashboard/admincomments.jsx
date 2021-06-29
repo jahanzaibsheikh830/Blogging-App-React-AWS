@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { Button, Comment, Form, Header } from "semantic-ui-react";
 import DeleteComment from "./deletecomment";
 import UpdateComment from "./updatecomment";
 import { API, graphqlOperation } from "aws-amplify";
 import { addComment } from "../../graphql/mutations";
-
-function CommentExampleReplyFormOuter(props) {
+import { addedComment } from "../../graphql/subscription";
+import { useDispatch, useSelector } from "react-redux";
+import { user } from "../../redux/action/reduxaction";
+const CommentExampleReplyFormOuter = (props) => {
   const [getId, setId] = useState("");
   const [commentValue, setCommmentValue] = useState("");
+  const dispatchs = useDispatch();
+  const useData = useSelector((state) => state.addUser);
   function setInput(e) {
     setCommmentValue(e.target.value);
     setId(props.postId);
@@ -25,6 +29,35 @@ function CommentExampleReplyFormOuter(props) {
       console.log("creating comment err", err);
     }
   }
+  let createSubscription;
+
+  function setupSubscription() {
+    createSubscription = API.graphql(graphqlOperation(addedComment)).subscribe({
+      next: ({ provider, value }) => {
+        const data = value.data.addedComment;
+        useData.posts.filter((post, index) => {
+          if (post.id === data.postId) {
+            console.log("post", post);
+            const newData = post.comments.push(data);
+            return dispatchs(
+              user({
+                posts: [...useData.posts, newData],
+              })
+            );
+          }
+        });
+      },
+      error: (err) => {
+        console.log("subscription Error", err);
+      },
+    });
+  }
+  useEffect(() => {
+    setupSubscription();
+    return () => {
+      createSubscription.unsubscribe();
+    };
+  }, []);
   return (
     <Comment.Group>
       <Header as='h3' dividing>
@@ -64,6 +97,6 @@ function CommentExampleReplyFormOuter(props) {
       </Form>
     </Comment.Group>
   );
-}
+};
 
-export default CommentExampleReplyFormOuter;
+export default memo(CommentExampleReplyFormOuter);

@@ -6,7 +6,6 @@ Amplify.configure(aws_xports);
 function App() {
   return (
     <div>
-      <SetupSubscription />
       <Router />
     </div>
   );
